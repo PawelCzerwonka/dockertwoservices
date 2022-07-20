@@ -6,7 +6,7 @@ pid=0
 
 # SIGTERM-handler
 term_handler() {
-  # Scipt which gracefully shutdown database before container goes donw
+  # Scipt which gracefully shutdown database before container goes down
   # Be aware that standard command "docker stop container" will wait only 10 second
   # If database need more time use e.g. for 100 sec: "docker stop container -t 100"
 
@@ -51,15 +51,14 @@ term_handler() {
 
 # setup handlers
 # on callback, kill the last background process, which is `tail -f /dev/null` and execute the specified handler
-trap 'kill ${!}; my_handler_return_to_the_begining_of_the_loop' SIGUSR1
 trap 'kill ${!}; term_handler' SIGTERM
 
 ######################################
 # SSHD service
 /usr/sbin/sshd -D &
+ps -ef
 
 # POSTGRES service
-ps -ef
 sudo -i -u postgres -- sh -c '/usr/pgsql-14/bin/pg_ctl -D /postgresql start'
 ps -ef
 
@@ -67,8 +66,5 @@ ps -ef
 #wait forever
 while true
 do
-#  tail -f /dev/null & wait ${!}
-  echo -e "\nSTARTING TTY WITH BASH..\n"
-  ps -ef;\
   tail -f /dev/null & wait ${!}
 done

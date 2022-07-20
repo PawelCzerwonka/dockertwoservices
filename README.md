@@ -10,6 +10,8 @@ docker run -it -d -p 5022:22 -p 5432:5432 --name twoservices twoservices:latest
 # To log into container
 rm -f /root/.ssh/known_hosts
 ssh postgres@localhost -p 5022
+yes
+password:postgres
 ps -ef
 psql
 \l
@@ -20,16 +22,15 @@ docker exec  twoservices sudo -u postgres psql -c "\l"
 
 
 # To attach and debug shutting down db
-docker attach container_name
+docker attach twoservices
 ctrl+p,ctrl+q to exit
-# To gracefully shutdown database in the container
+# To gracefully shutdown database in the container (from second terminal)
 docker stop twoservices -t 100
 
 # Start
 docker start twoservices
 
 # To log into container
-rm -f /root/.ssh/known_hosts
 ssh postgres@localhost -p 5022
 ps -ef
 psql
