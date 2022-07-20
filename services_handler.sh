@@ -4,17 +4,12 @@ set -x
 
 pid=0
 
-# SIGUSR1-handler
-my_handler_return_to_the_begining_of_the_loop() {
-  echo 'Bash should be worked again'
-}
-
-
 # SIGTERM-handler
 term_handler() {
   # Scipt which gracefully shutdown database before container goes donw
   # Be aware that standard command "docker stop container" will wait only 10 second
   # If database need more time use e.g. for 100 sec: "docker stop container -t 100"
+
   ps -ef
   echo -e "\n STOPING DB..\n"
   pid=`pgrep -u postgres -d:|awk -F':' '{ print $1 }'`
@@ -70,13 +65,10 @@ ps -ef
 
 #####################################
 #wait forever
-echo -e "\nIF YOU EXIT FROM BASH, LET'S SAY YOU CAN DEBUG SCRIPT\nWHICH IS RESPONSIBLE FOR START AND STOP DB DURING UP AND DOWN CONTAINER\n"
 while true
 do
 #  tail -f /dev/null & wait ${!}
   echo -e "\nSTARTING TTY WITH BASH..\n"
-  /bin/bash ;\
   ps -ef;\
-  printf  '\nTO REACTIVATE BASH:\nctrl+p,ctrl+1 TO RETURN TO HOST AND TYPE THE FOLLOWING COMMAND:\ndocker kill --signal="SIGUSR1" container_name\ndocker attach container_name\n\nTO SHUT DOWN CONTAINER WITH GRACEFULLY SHUTTING DOWN DB DO THE FOLLOWING COMMAND:\nctrl+p,ctrl+q TO RETURN TO HOST AND TYPE THE FOLLOWING COMMAND:\ndocker stop container_name -t <the_maximum_time_after_container_can_wait_for_db_to_be_shutdown>\n';\
   tail -f /dev/null & wait ${!}
 done
